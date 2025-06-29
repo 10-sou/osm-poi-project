@@ -10,7 +10,7 @@
 /frontend/.env*
 
 # Python virtual env（ある場合）
-/scripts/venv/
+/home/t012/osm-poi-project/.venv
 
 # 一時出力や不要なファイル
 __pycache__/
