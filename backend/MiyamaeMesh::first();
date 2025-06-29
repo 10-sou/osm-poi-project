@@ -1,0 +1,13 @@
+[90m= [39m[34;4mApp\Models\TakatuMesh[39;24m {#5229
+    [34mid[39m: [35m1[39m,
+    [34mmesh_id[39m: [35m0[39m,
+    [34mpoi_coords[39m: "[32m[][39m",
+    [34mseven_eleven[39m: [35m0[39m,
+    [34mfamily_mart[39m: [35m0[39m,
+    [34mlawson[39m: [35m0[39m,
+    [34mheartful_hospital[39m: [35m0[39m,
+    [34mtakatsu_hospital[39m: [35m0[39m,
+    [34mcreated_at[39m: "[32m2025-06-28 01:05:51[39m",
+    [34mupdated_at[39m: "[32m2025-06-28 01:05:51[39m",
+  }
+

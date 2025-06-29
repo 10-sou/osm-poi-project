@@ -1,0 +1,24 @@
+# Laravel
+/backend/vendor/
+/backend/node_modules/
+/backend/storage/*.key
+/backend/.env
+
+# Vue
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.env*
+
+# Python virtual env（ある場合）
+/scripts/venv/
+
+# 一時出力や不要なファイル
+__pycache__/
+/output/
+/input/
+
+# OS/エディタの一時ファイル
+*.log
+*.DS_Store
+*.swp
+*.swo

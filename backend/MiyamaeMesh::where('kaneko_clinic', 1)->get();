@@ -1,0 +1,18 @@
+[90m= [39m[34;4mApp\Models\MiyamaeMesh[39;24m {#5228
+    [34mid[39m: [35m1[39m,
+    [34mmesh_id[39m: [35m0[39m,
+    [34mpoi_coords[39m: "[32m[][39m",
+    [34mkaneko_clinic[39m: [35m0[39m,
+    [34mseven_eleven[39m: [35m0[39m,
+    [34mfamily_mart[39m: [35m0[39m,
+    [34mlawson[39m: [35m0[39m,
+    [34mhigashiyoko_hospital[39m: [35m0[39m,
+    [34marima_hospital[39m: [35m0[39m,
+    [34mkawasaki_memorial[39m: [35m0[39m,
+    [34marima_hospital_alt[39m: [35m0[39m,
+    [34mhigashiyoko_hospital_alt[39m: [35m0[39m,
+    [34mmarianna_university_hospital[39m: [35m0[39m,
+    [34mcreated_at[39m: [36mnull[39m,
+    [34mupdated_at[39m: [36mnull[39m,
+  }
+
