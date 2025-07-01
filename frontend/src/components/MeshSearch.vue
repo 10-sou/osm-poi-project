@@ -3,58 +3,32 @@
     <h2>POI メッシュ検索アプリ</h2>
     <h3>タグでメッシュIDを検索</h3>
 
-    <!-- 対象区選択 -->
-    <label>対象区:</label>
-    <select v-model="selectedWard" @change="fetchData">
-      <option disabled value="">区を選んでください</option>
-      <option value="takatuki">高津区</option>
-      <option value="miyamae">宮前区</option>
-    </select>
+    <SearchForm
+      :selectedWard="selectedWard"
+      :selectedTag="selectedTag"
+      :tagOptions="tagOptions"
+      @ward-change="handleWardChange"
+      @search="search"
+    />
 
-    <!-- タグ選択 -->
-    <div v-if="tagOptions.length > 0">
-      <label>タグ:</label>
-      <select v-model="selectedTag">
-        <option disabled value="">タグを選んでください</option>
-        <option v-for="tag in tagOptions" :key="tag" :value="tag">{{ tag }}</option>
-      </select>
-      <button @click="search">検索</button>
-    </div>
-
-    <!-- 検索結果表示 -->
-    <div v-if="results.length > 0">
-      <h3>該当メッシュIDとPOI座標:</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>メッシュID</th>
-            <th>緯度</th>
-            <th>経度</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="result in results" :key="result.mesh_id">
-            <td>{{ result.mesh_id }}</td>
-            <td>{{ result.coord[1] }}</td>
-            <td>{{ result.coord[0] }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div v-else-if="searched">
-      <p>該当なし</p>
-    </div>
+    <SearchResults :results="results" :searched="searched" />
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import SearchForm from './SearchForm.vue'
+import SearchResults from './SearchResults.vue'
 
 export default {
   name: 'MeshSearch',
+  components: {
+    SearchForm,
+    SearchResults
+  },
   setup() {
-    const selectedWard = ref('')
+    const selectedWard = ref('takatuki')
     const selectedTag = ref('')
     const tagOptions = ref([])
     const allData = ref([])
@@ -72,7 +46,6 @@ export default {
         searched.value = false
 
         const tagSet = new Set()
-
         for (const row of res.data) {
           if (row.poi_coords) {
             try {
@@ -83,25 +56,27 @@ export default {
             }
           }
         }
-
         tagOptions.value = Array.from(tagSet)
-
       } catch (error) {
         console.error('API読み込み失敗:', error)
       }
     }
 
-    const search = () => {
+    const handleWardChange = (ward) => {
+      selectedWard.value = ward
+      fetchData()
+    }
+
+    const search = (tag) => {
+      selectedTag.value = tag
       results.value = []
       searched.value = true
-
-      if (!selectedTag.value) return
 
       for (const row of allData.value) {
         if (row.poi_coords) {
           try {
             const coordsDict = JSON.parse(row.poi_coords)
-            const coord = coordsDict[selectedTag.value]
+            const coord = coordsDict[tag]
             if (coord) {
               results.value.push({
                 mesh_id: row.mesh_id,
@@ -115,40 +90,17 @@ export default {
       }
     }
 
-    onMounted(() => {
-      selectedWard.value = 'takatuki'
-      fetchData()
-    })
+    onMounted(fetchData)
 
     return {
       selectedWard,
       selectedTag,
       tagOptions,
       results,
-      fetchData,
-      search,
-      searched
+      searched,
+      handleWardChange,
+      search
     }
   }
 }
 </script>
-
-<style scoped>
-label {
-  display: block;
-  margin-top: 10px;
-}
-select {
-  margin-right: 10px;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-th, td {
-  border: 1px solid #ccc;
-  padding: 6px;
-  text-align: center;
-}
-</style>
