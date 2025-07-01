@@ -4,10 +4,9 @@
     <h3>タグでメッシュIDを検索</h3>
 
     <SearchForm
-      :selectedWard="selectedWard"
-      :selectedTag="selectedTag"
+      v-model:selectedWard="selectedWard"
+      v-model:selectedTag="selectedTag"
       :tagOptions="tagOptions"
-      @ward-change="handleWardChange"
       @search="search"
     />
 
@@ -16,7 +15,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
 import SearchForm from './SearchForm.vue'
 import SearchResults from './SearchResults.vue'
@@ -56,27 +55,24 @@ export default {
             }
           }
         }
+
         tagOptions.value = Array.from(tagSet)
       } catch (error) {
         console.error('API読み込み失敗:', error)
       }
     }
 
-    const handleWardChange = (ward) => {
-      selectedWard.value = ward
-      fetchData()
-    }
-
-    const search = (tag) => {
-      selectedTag.value = tag
+    const search = () => {
       results.value = []
       searched.value = true
+
+      if (!selectedTag.value) return
 
       for (const row of allData.value) {
         if (row.poi_coords) {
           try {
             const coordsDict = JSON.parse(row.poi_coords)
-            const coord = coordsDict[tag]
+            const coord = coordsDict[selectedTag.value]
             if (coord) {
               results.value.push({
                 mesh_id: row.mesh_id,
@@ -91,6 +87,7 @@ export default {
     }
 
     onMounted(fetchData)
+    watch(selectedWard, fetchData)
 
     return {
       selectedWard,
@@ -98,7 +95,6 @@ export default {
       tagOptions,
       results,
       searched,
-      handleWardChange,
       search
     }
   }

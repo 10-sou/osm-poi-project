@@ -1,4 +1,3 @@
-<!-- components/SearchResults.vue -->
 <template>
   <div>
     <div v-if="results.length > 0">
@@ -35,3 +34,21 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: center;
+}
+
+th {
+  background-color: #f5f5f5;
+}
+</style>
