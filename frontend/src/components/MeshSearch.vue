@@ -11,6 +11,9 @@
     />
 
     <SearchResults :results="results" :searched="searched" />
+
+    <!-- 🔽 新たに地図表示コンポーネント追加 -->
+    <MapDisplay :points="results" />
   </div>
 </template>
 
@@ -19,12 +22,14 @@ import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
 import SearchForm from './SearchForm.vue'
 import SearchResults from './SearchResults.vue'
+import MapDisplay from './MapDisplay.vue' // 追加
 
 export default {
   name: 'MeshSearch',
   components: {
     SearchForm,
-    SearchResults
+    SearchResults,
+    MapDisplay // 追加
   },
   setup() {
     const selectedWard = ref('takatuki')
