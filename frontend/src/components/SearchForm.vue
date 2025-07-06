@@ -1,42 +1,52 @@
 <template>
   <div>
-    <label>対象区:</label>
-    <select :value="selectedWard" @change="onWardChange">
-      <option disabled value="">区を選んでください</option>
+    対象区:
+    <select v-model="localWard" @change="emitWard">
       <option value="takatuki">高津区</option>
       <option value="miyamae">宮前区</option>
     </select>
 
-    <div v-if="tagOptions.length > 0">
-      <label>タグ:</label>
-      <select :value="selectedTag" @change="onTagChange">
-        <option disabled value="">タグを選んでください</option>
-        <option v-for="tag in tagOptions" :key="tag" :value="tag">{{ tag }}</option>
-      </select>
-      <button @click="emitSearch">検索</button>
-    </div>
+    カテゴリ:
+    <select v-model="localCategory" @change="emitCategory">
+      <option value="コンビニ">コンビニ</option>
+      <option value="病院">病院</option>
+    </select>
+
+    タグ:
+    <select v-model="localTag">
+      <option disabled value="">タグを選んでください</option>
+      <option v-for="tag in tagOptions" :key="tag" :value="tag">{{ tag }}</option>
+    </select>
+
+    <button @click="emitSearch">検索</button>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'SearchForm',
-  props: {
-    selectedWard: String,
-    selectedTag: String,
-    tagOptions: Array
-  },
-  emits: ['update:selectedWard', 'update:selectedTag', 'search'],
-  methods: {
-    onWardChange(event) {
-      this.$emit('update:selectedWard', event.target.value)
-    },
-    onTagChange(event) {
-      this.$emit('update:selectedTag', event.target.value)
-    },
-    emitSearch() {
-      this.$emit('search')
-    }
-  }
+<script setup>
+import { ref, watch } from 'vue'
+import { useEmit } from 'vue'
+
+const emit = defineEmits(['update:selectedWard', 'update:selectedCategory', 'update:selectedTag', 'search'])
+
+const props = defineProps({
+  selectedWard: String,
+  selectedCategory: String,
+  selectedTag: String,
+  tagOptions: Array
+})
+
+const localWard = ref(props.selectedWard)
+const localCategory = ref(props.selectedCategory)
+const localTag = ref(props.selectedTag)
+
+const emitWard = () => {
+  emit('update:selectedWard', localWard.value)
+}
+const emitCategory = () => {
+  emit('update:selectedCategory', localCategory.value)
+}
+const emitSearch = () => {
+  emit('update:selectedTag', localTag.value)
+  emit('search')
 }
 </script>
