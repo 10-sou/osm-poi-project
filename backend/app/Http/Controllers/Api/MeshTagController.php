@@ -4,33 +4,98 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class MeshTagController extends Controller
 {
     public function tagOptions(Request $request)
     {
-        // 🔍 受け取ったパラメータをログ出力
         $ward = $request->query('ward');
         $category = $request->query('category');
-        Log::info('📝 tagOptions() called', ['ward' => $ward, 'category' => $category]);
 
-        // 🔍 受け取れていない場合のエラー処理（400）
-        if (!$ward || !$category) {
-            Log::warning('❌ パラメータが不足しています', ['ward' => $ward, 'category' => $category]);
-            return response()->json(['error' => 'Missing ward or category'], 400);
-        }
-
-        // ✅ テストデータで仮の動作確認（本来はDB処理など）
-        $mockData = [
-            '病院' => ['虎の門病院 分院', 'ハートフル川崎病院'],
-            'コンビニ' => ['セブン-イレブン', 'ファミリーマート', 'ローソン']
+        // 区ごとのカテゴリとタグ
+        $categoryTagMap = [
+            'takatu' => [
+                '病院' => [
+                    'kaneko_clinic',
+                    'arima_hospital',
+                    'arima_hospital_alt',
+                    'kawasaki_memorial',
+                    'higashiyoko_hospital',
+                    'higashiyoko_hospital_alt',
+                    'marianna_university_hospital',
+                    'heartful_hospital',
+                    'takatsu_hospital',
+                    'bluesky_seikotsuin',
+                    'medical_scanning_2',
+                    'kata_kura_hospital',
+                    'sakado_clinic',
+                    'teikyo_univ_hospital',
+                    'mizonokuchi_gastro_clinic',
+                    'ando_orthopedic',
+                    'toranomon_branch',
+                    'takatsu_central_clinic',
+                ],
+                'コンビニ' => [
+                    'seven_eleven',
+                    'family_mart',
+                    'lawson',
+                ],
+            ],
+            'miyamae' => [
+                '病院' => [
+                    'kaneko_clinic',
+                    'arima_hospital',
+                    'arima_hospital_alt',
+                    'kawasaki_memorial',
+                    'higashiyoko_hospital',
+                    'higashiyoko_hospital_alt',
+                    'marianna_university_hospital',
+                ],
+                'コンビニ' => [
+                    'seven_eleven',
+                    'family_mart',
+                    'lawson',
+                ],
+            ],
         ];
 
-        $tags = $mockData[$category] ?? [];
+        $labelMap = [
+            'kaneko_clinic' => 'かねこクリニック',
+            'arima_hospital' => '医療法人愛生会有馬病院',
+            'arima_hospital_alt' => '愛生会有馬病院',
+            'kawasaki_memorial' => '医療法人花咲会　かわさき記念病院',
+            'higashiyoko_hospital' => '一般財団法人　聖マリアンナ会　東横恵愛病院',
+            'higashiyoko_hospital_alt' => '聖マリアンナ会東横恵愛病院',
+            'marianna_university_hospital' => '聖マリアンナ医科大学病院',
+            'seven_eleven' => 'セブン-イレブン',
+            'family_mart' => 'ファミリーマート',
+            'lawson' => 'ローソン',
 
-        // 🔍 返却値のログ
-        Log::info('✅ 返却タグ一覧', ['tags' => $tags]);
+            // 高津区追加病院名
+            'heartful_hospital' => 'ハートフル川崎病院',
+            'takatsu_hospital' => '総合高津中央病院',
+            'bluesky_seikotsuin' => 'ブルースカイ整骨院',
+            'medical_scanning_2' => 'メディカルスキャニング第二溝の口クリニック',
+            'kata_kura_hospital' => '医療法人社団輔仁会片倉病院',
+            'sakado_clinic' => '坂戸診療所',
+            'teikyo_univ_hospital' => '帝京大学医学部附属溝口病院',
+            'mizonokuchi_gastro_clinic' => '溝の口胃腸科・内科クリニック',
+            'ando_orthopedic' => '滋恵会安藤整形外科病院',
+            'toranomon_branch' => '虎の門病院 分院',
+            'takatsu_central_clinic' => '高津中央クリニック',
+        ];
+
+        $values = $categoryTagMap[$ward][$category] ?? [];
+
+        $tags = [];
+
+        foreach ($values as $value) {
+            $label = $labelMap[$value] ?? $value;
+            $tags[] = [
+                'value' => $value,
+                'label' => $label,
+            ];
+        }
 
         return response()->json($tags, 200, [], JSON_UNESCAPED_UNICODE);
     }
