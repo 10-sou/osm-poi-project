@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Middleware\HandleCors;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,8 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // ✅ CORSミドルウェアを最初に追加（Vueなど他オリジンからのAPIアクセス許可）
+        $middleware->prepend(HandleCors::class);
+
+        // 必要に応じて他のミドルウェアもここに追加できます
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+        // 例外ハンドラのカスタマイズ（必要があれば）
+    })
+    ->create();
