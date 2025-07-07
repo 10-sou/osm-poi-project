@@ -3,40 +3,63 @@
     <label>対象区:</label>
     <select :value="selectedWard" @change="onWardChange">
       <option disabled value="">区を選んでください</option>
-      <option value="takatuki">高津区</option>
+      <option value="takatu">高津区</option>
       <option value="miyamae">宮前区</option>
     </select>
 
-    <div v-if="tagOptions.length > 0">
-      <label>タグ:</label>
-      <select :value="selectedTag" @change="onTagChange">
-        <option disabled value="">タグを選んでください</option>
-        <option v-for="tag in tagOptions" :key="tag" :value="tag">{{ tag }}</option>
-      </select>
-      <button @click="emitSearch">検索</button>
-    </div>
+    <label>カテゴリ:</label>
+    <select :value="selectedCategory" @change="onCategoryChange">
+      <option disabled value="">カテゴリを選んでください</option>
+      <option value="病院">病院</option>
+      <option value="コンビニ">コンビニ</option>
+    </select>
+
+    <label>タグ:</label>
+    <select :value="selectedTag" @change="onTagChange">
+      <option disabled value="">タグを選んでください</option>
+      <option
+        v-for="option in tagOptions"
+        :key="option.value"
+        :value="option.value"
+      >
+        {{ option.label }}
+      </option>
+    </select>
+
+    <button @click="$emit('search')">検索</button>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'SearchForm',
-  props: {
-    selectedWard: String,
-    selectedTag: String,
-    tagOptions: Array
-  },
-  emits: ['update:selectedWard', 'update:selectedTag', 'search'],
-  methods: {
-    onWardChange(event) {
-      this.$emit('update:selectedWard', event.target.value)
-    },
-    onTagChange(event) {
-      this.$emit('update:selectedTag', event.target.value)
-    },
-    emitSearch() {
-      this.$emit('search')
-    }
+<script setup>
+const props = defineProps({
+  selectedWard: String,
+  selectedCategory: String,
+  selectedTag: String,
+  tagOptions: {
+    type: Array,
+    default: () => []
   }
+})
+
+const emit = defineEmits([
+  'update:selectedWard',
+  'update:selectedCategory',
+  'update:selectedTag',
+  'search'
+])
+
+const onWardChange = (e) => {
+  console.log('🟡 区変更 emit:', e.target.value)
+  emit('update:selectedWard', e.target.value)
+}
+
+const onCategoryChange = (e) => {
+  console.log('🟡 カテゴリ変更 emit:', e.target.value)
+  emit('update:selectedCategory', e.target.value)
+}
+
+const onTagChange = (e) => {
+  console.log('🟡 タグ変更 emit:', e.target.value)
+  emit('update:selectedTag', e.target.value)
 }
 </script>
