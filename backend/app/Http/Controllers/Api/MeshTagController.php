@@ -11,70 +11,32 @@ class MeshTagController extends Controller
 {
     // タグ選択肢を返すメソッド
     public function tagOptions(Request $request)
-    {
-        $ward = $request->query('ward');
-        $category = $request->query('category');
+{
+    $ward = $request->query('ward');
+    $category = $request->query('category');
 
-        // 区ごとのカテゴリとタグ
-        $categoryTagMap = [
-            'takatu' => [
-                '病院' => [
-                    'kaneko_clinic',
-                    'arima_hospital',
-                    'arima_hospital_alt',
-                    'kawasaki_memorial',
-                    'higashiyoko_hospital',
-                    'higashiyoko_hospital_alt',
-                    'marianna_university_hospital',
-                    'heartful_hospital',
-                    'takatsu_hospital',
-                    'bluesky_seikotsuin',
-                    'medical_scanning_2',
-                    'kata_kura_hospital',
-                    'sakado_clinic',
-                    'teikyo_univ_hospital',
-                    'mizonokuchi_gastro_clinic',
-                    'ando_orthopedic',
-                    'toranomon_branch',
-                    'takatsu_central_clinic',
-                ],
-                'コンビニ' => [
-                    'seven_eleven',
-                    'family_mart',
-                    'lawson',
-                ],
+    $categoryTagMap = [
+        'takatu' => [
+            '病院' => [
+                'kaneko_clinic', 'takatsu_hospital', 'bluesky_seikotsuin',
+                'medical_scanning_2', 'kata_kura_hospital', 'sakado_clinic',
+                'teikyo_univ_hospital', 'mizonokuchi_gastro_clinic',
+                'ando_orthopedic', 'toranomon_branch', 'takatsu_central_clinic',
+                'heartful_hospital'
             ],
-            'miyamae' => [
-                '病院' => [
-                    'kaneko_clinic',
-                    'arima_hospital',
-                    'arima_hospital_alt',
-                    'kawasaki_memorial',
-                    'higashiyoko_hospital',
-                    'higashiyoko_hospital_alt',
-                    'marianna_university_hospital',
-                ],
-                'コンビニ' => [
-                    'seven_eleven',
-                    'family_mart',
-                    'lawson',
-                ],
+        ],
+        'miyamae' => [
+            '病院' => [
+                'kaneko_clinic', 'arima_hospital', 'arima_hospital_alt',
+                'kawasaki_memorial', 'higashiyoko_hospital', 'higashiyoko_hospital_alt',
+                'marianna_university_hospital'
             ],
-        ];
+        ]
+    ];
 
-        // ラベル表示用マップ
-        $labelMap = [
-            'kaneko_clinic' => 'かねこクリニック',
-            'arima_hospital' => '医療法人愛生会有馬病院',
-            'arima_hospital_alt' => '愛生会有馬病院',
-            'kawasaki_memorial' => '医療法人花咲会　かわさき記念病院',
-            'higashiyoko_hospital' => '一般財団法人　聖マリアンナ会　東横恵愛病院',
-            'higashiyoko_hospital_alt' => '聖マリアンナ会東横恵愛病院',
-            'marianna_university_hospital' => '聖マリアンナ医科大学病院',
-            'seven_eleven' => 'セブン-イレブン',
-            'family_mart' => 'ファミリーマート',
-            'lawson' => 'ローソン',
-            'heartful_hospital' => 'ハートフル川崎病院',
+    $tagLabelMap = [
+        'takatu' => [
+            'kaneko_clinic' => 'そめや内科クリニック',
             'takatsu_hospital' => '総合高津中央病院',
             'bluesky_seikotsuin' => 'ブルースカイ整骨院',
             'medical_scanning_2' => 'メディカルスキャニング第二溝の口クリニック',
@@ -85,21 +47,32 @@ class MeshTagController extends Controller
             'ando_orthopedic' => '滋恵会安藤整形外科病院',
             'toranomon_branch' => '虎の門病院 分院',
             'takatsu_central_clinic' => '高津中央クリニック',
+            'heartful_hospital' => 'ハートフル川崎病院',
+        ],
+        'miyamae' => [
+            'kaneko_clinic' => 'かねこクリニック',
+            'arima_hospital' => '医療法人愛生会有馬病院',
+            'arima_hospital_alt' => '愛生会有馬病院',
+            'kawasaki_memorial' => '医療法人花咲会　かわさき記念病院',
+            'higashiyoko_hospital' => '一般財団法人　聖マリアンナ会　東横恵愛病院',
+            'higashiyoko_hospital_alt' => '聖マリアンナ会東横恵愛病院',
+            'marianna_university_hospital' => '聖マリアンナ医科大学病院',
+        ]
+    ];
+
+    $tags = $categoryTagMap[$ward][$category] ?? [];
+
+    $response = array_map(function ($tag) use ($tagLabelMap, $ward) {
+        return [
+            'value' => $tag,
+            'label' => $tagLabelMap[$ward][$tag] ?? $tag
         ];
+    }, $tags);
 
-        $values = $categoryTagMap[$ward][$category] ?? [];
+    return response()->json($response);
+}
 
-        $tags = [];
-        foreach ($values as $value) {
-            $label = $labelMap[$value] ?? $value;
-            $tags[] = [
-                'value' => $value,
-                'label' => $label,
-            ];
-        }
 
-        return response()->json($tags, 200, [], JSON_UNESCAPED_UNICODE);
-    }
 
     // 検索結果を返すメソッド
     public function search(Request $request)
