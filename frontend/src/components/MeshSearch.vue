@@ -1,7 +1,5 @@
 <template>
   <div>
-    <h2>POI メッシュ検索アプリ</h2>
-
     <SearchForm
       v-model:selectedWard="selectedWard"
       v-model:selectedCategory="selectedCategory"
@@ -11,6 +9,8 @@
     />
 
     <SearchResults :results="results" :searched="searched" />
+
+    <MapDisplay :points="results" />
   </div>
 </template>
 
@@ -19,6 +19,9 @@ import { ref, watch } from 'vue'
 import axios from 'axios'
 import SearchForm from './SearchForm.vue'
 import SearchResults from './SearchResults.vue'
+import MapDisplay from './MapDisplay.vue'
+
+
 
 const selectedWard = ref('')
 const selectedCategory = ref('')
