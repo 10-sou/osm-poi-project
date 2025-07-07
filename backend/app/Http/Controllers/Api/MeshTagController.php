@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MeshTagController extends Controller
 {
+    // タグ選択肢を返すメソッド
     public function tagOptions(Request $request)
     {
         $ward = $request->query('ward');
@@ -59,6 +62,7 @@ class MeshTagController extends Controller
             ],
         ];
 
+        // ラベル表示用マップ
         $labelMap = [
             'kaneko_clinic' => 'かねこクリニック',
             'arima_hospital' => '医療法人愛生会有馬病院',
@@ -70,8 +74,6 @@ class MeshTagController extends Controller
             'seven_eleven' => 'セブン-イレブン',
             'family_mart' => 'ファミリーマート',
             'lawson' => 'ローソン',
-
-            // 高津区追加病院名
             'heartful_hospital' => 'ハートフル川崎病院',
             'takatsu_hospital' => '総合高津中央病院',
             'bluesky_seikotsuin' => 'ブルースカイ整骨院',
@@ -88,7 +90,6 @@ class MeshTagController extends Controller
         $values = $categoryTagMap[$ward][$category] ?? [];
 
         $tags = [];
-
         foreach ($values as $value) {
             $label = $labelMap[$value] ?? $value;
             $tags[] = [
@@ -98,5 +99,44 @@ class MeshTagController extends Controller
         }
 
         return response()->json($tags, 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    // 検索結果を返すメソッド
+    public function search(Request $request)
+    {
+        $ward = $request->query('ward');
+        $tag = $request->query('tag');
+
+        $tableMap = [
+            'takatu' => 'takatu_mesh',
+            'miyamae' => 'miyamae_mesh',
+        ];
+
+        $table = $tableMap[$ward] ?? null;
+
+        if (!$table || !$tag) {
+            return response()->json(['error' => 'Invalid request'], 400);
+        }
+
+        try {
+            $results = DB::table($table)
+                ->where($tag, 1)
+                ->select('mesh_id', 'poi_coords')
+                ->get();
+
+            Log::info('✅ 検索結果取得', [
+                '件数' => $results->count(),
+                '一部結果' => $results->take(1),
+            ]);
+
+            return response()->json($results, 200, [], JSON_UNESCAPED_UNICODE);
+        } catch (\Exception $e) {
+            Log::error('❌ 検索エラー', [
+                'message' => $e->getMessage(),
+                'ward' => $ward,
+                'tag' => $tag,
+            ]);
+            return response()->json(['error' => 'Server error'], 500);
+        }
     }
 }
