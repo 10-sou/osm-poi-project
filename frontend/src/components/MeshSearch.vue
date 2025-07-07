@@ -20,47 +20,65 @@ import axios from 'axios'
 import SearchForm from './SearchForm.vue'
 import SearchResults from './SearchResults.vue'
 
-const selectedWard = ref('miyamae')
-const selectedCategory = ref('病院')
+const selectedWard = ref('')
+const selectedCategory = ref('')
 const selectedTag = ref('')
 const tagOptions = ref([])
 const results = ref([])
 const searched = ref(false)
 
-// ✅ APIのURLをLaravelに向ける（http://localhost:8000）
-// ✅ CORS確認用ログも含めて
+// 区やカテゴリの変更でタグオプションを更新
 watch([selectedWard, selectedCategory], async ([ward, category]) => {
+  console.log('🟡 選択変更検知: ward=', ward, 'category=', category)
   if (!ward || !category) return
 
-  console.log(`🟡 選択変更検知: ward=${ward}, category=${category}`)
   try {
-    const url = `http://localhost:8000/api/tag-options?ward=${ward}&category=${category}`
-    console.log('🔄 APIリクエスト送信先:', url)
-
-    const response = await axios.get(url)
-    console.log('🟢 APIレスポンス受信:', response.data)
-
-    if (Array.isArray(response.data)) {
-      tagOptions.value = response.data
-    } else {
-      console.warn('⚠️ 受信したデータは配列ではありません:', response.data)
-      tagOptions.value = []
-    }
+    const res = await axios.get(`/api/tag-options?ward=${ward}&category=${category}`)
+    console.log('🟢 APIレスポンス受信:', res.data)
+    tagOptions.value = res.data
   } catch (error) {
-    console.error('🔴 APIエラー発生:', error)
-    if (error.response) {
-      console.error('🔴 レスポンスステータス:', error.response.status)
-      console.error('🔴 レスポンスデータ:', error.response.data)
-    } else if (error.request) {
-      console.error('🔴 リクエストは送信されたが応答なし（CORSの可能性）:', error.request)
-    } else {
-      console.error('🔴 リクエスト設定時のエラー:', error.message)
-    }
+    console.error('🔴 タグオプション取得エラー:', error)
   }
-}, { immediate: true })
+})
 
-function search() {
-  console.log(`🔍 検索実行: ward=${selectedWard.value}, tag=${selectedTag.value}`)
-  searched.value = true
+// 検索実行
+const search = async () => {
+  if (!selectedWard.value || !selectedTag.value) return
+
+  const url = `/api/search?ward=${selectedWard.value}&tag=${selectedTag.value}`
+  console.log('🔍 検索実行:', url)
+
+  try {
+    const res = await axios.get(url)
+    const tag = selectedTag.value
+    const label = tagOptions.value.find(opt => opt.value === tag)?.label ?? tag
+
+    const filtered = []
+
+    for (const row of res.data) {
+      if (row.poi_coords) {
+        try {
+          const coordsDict = JSON.parse(row.poi_coords)
+          if (coordsDict.hasOwnProperty(label)) {
+            filtered.push({
+              mesh_id: row.mesh_id,
+              coord: coordsDict[label]
+            })
+          }
+        } catch (e) {
+          console.warn("⚠️ JSONパース失敗:", row.poi_coords)
+        }
+      }
+    }
+
+    console.log('✅ フィルタ後の検索結果:', filtered)
+
+    results.value = filtered
+    searched.value = true
+  } catch (error) {
+    console.error("検索エラー:", error)
+    results.value = []
+    searched.value = true
+  }
 }
 </script>
