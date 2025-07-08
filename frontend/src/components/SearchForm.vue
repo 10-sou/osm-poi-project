@@ -49,17 +49,14 @@ const emit = defineEmits([
 ])
 
 const onWardChange = (e) => {
-  console.log('🟡 区変更 emit:', e.target.value)
   emit('update:selectedWard', e.target.value)
 }
 
 const onCategoryChange = (e) => {
-  console.log('🟡 カテゴリ変更 emit:', e.target.value)
   emit('update:selectedCategory', e.target.value)
 }
 
 const onTagChange = (e) => {
-  console.log('🟡 タグ変更 emit:', e.target.value)
   emit('update:selectedTag', e.target.value)
 }
 </script>

@@ -21,8 +21,6 @@ import SearchForm from './SearchForm.vue'
 import SearchResults from './SearchResults.vue'
 import MapDisplay from './MapDisplay.vue'
 
-
-
 const selectedWard = ref('')
 const selectedCategory = ref('')
 const selectedTag = ref('')
@@ -31,57 +29,47 @@ const results = ref([])
 const searched = ref(false)
 
 // 区やカテゴリの変更でタグオプションを更新
-watch([selectedWard, selectedCategory], async ([ward, category]) => {
-  console.log('🟡 選択変更検知: ward=', ward, 'category=', category)
+watch([selectedWard, selectedCategory], ([ward, category]) => {
   if (!ward || !category) return
 
-  try {
-    const res = await axios.get(`/api/tag-options?ward=${ward}&category=${category}`)
-    console.log('🟢 APIレスポンス受信:', res.data)
-    tagOptions.value = res.data
-  } catch (error) {
-    console.error('🔴 タグオプション取得エラー:', error)
-  }
+  axios.get(`/api/tag-options?ward=${ward}&category=${category}`)
+    .then(res => {
+      tagOptions.value = res.data
+    })
 })
 
 // 検索実行
-const search = async () => {
+const search = () => {
   if (!selectedWard.value || !selectedTag.value) return
 
   const url = `/api/search?ward=${selectedWard.value}&tag=${selectedTag.value}`
-  console.log('🔍 検索実行:', url)
 
-  try {
-    const res = await axios.get(url)
-    const tag = selectedTag.value
-    const label = tagOptions.value.find(opt => opt.value === tag)?.label ?? tag
+  axios.get(url)
+    .then(res => {
+      const tag = selectedTag.value
 
-    const filtered = []
-
-    for (const row of res.data) {
-      if (row.poi_coords) {
-        try {
-          const coordsDict = JSON.parse(row.poi_coords)
-          if (coordsDict.hasOwnProperty(label)) {
-            filtered.push({
-              mesh_id: row.mesh_id,
-              coord: coordsDict[label]
-            })
-          }
-        } catch (e) {
-          console.warn("⚠️ JSONパース失敗:", row.poi_coords)
+      let label = tag
+      for (const tagOption of tagOptions.value) {
+        if (tagOption.value === tag) {
+          label = tagOption.label
+          break
         }
       }
-    }
 
-    console.log('✅ フィルタ後の検索結果:', filtered)
+      const filtered = []
 
-    results.value = filtered
-    searched.value = true
-  } catch (error) {
-    console.error("検索エラー:", error)
-    results.value = []
-    searched.value = true
-  }
+      for (const row of res.data) {
+        const coordsDict = JSON.parse(row.poi_coords)
+
+        filtered.push({
+          mesh_id: row.mesh_id,
+          coord: coordsDict[label]
+        })
+      }
+
+      results.value = filtered
+      searched.value = true
+    })
 }
+
 </script>
