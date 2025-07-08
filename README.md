@@ -27,8 +27,7 @@ Qiitaでの解説記事はこちら →
 ---
 
 ## 🚀 デモ（スクリーンショット）
-
-（任意：地図や検索UIのスクリーンショットを貼ってください）
+![Animation 2](https://github.com/user-attachments/assets/d676879d-1e98-4cce-817d-77bb29418692)
 
 ---
 
