@@ -16,9 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // ✅ CORSミドルウェアを最初に追加（Vueなど他オリジンからのAPIアクセス許可）
         $middleware->prepend(HandleCors::class);
 
-        // 必要に応じて他のミドルウェアもここに追加できます
+        
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // 例外ハンドラのカスタマイズ（必要があれば）
+        
     })
     ->create();

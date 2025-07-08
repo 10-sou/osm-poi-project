@@ -33,7 +33,7 @@ class MiyamaeMeshSeeder extends Seeder
                 'poi_coords' => json_encode($record['poi_coords']),
             ];
 
-            // 各タグの存在フラグ（1 or 0）をマッピング
+            
             foreach ($tagMap as $jp => $en) {
                 $row[$en] = isset($record[$jp]) ? $record[$jp] : 0;
             }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MeshTagController extends Controller
 {
@@ -76,14 +75,20 @@ class MeshTagController extends Controller
             ],
         ];
 
-        $tags = $categoryTagMap[$ward][$category] ?? [];
+        if (isset($categoryTagMap[$ward]) && isset($categoryTagMap[$ward][$category])) {
+            $tags = $categoryTagMap[$ward][$category];
+        } else {
+            $tags = [];
+        }
 
-        $response = array_map(function ($tag) use ($tagLabelMap, $ward) {
-            return [
+        $response = [];
+        foreach ($tags as $tag) {
+            $label = isset($tagLabelMap[$ward][$tag]) ? $tagLabelMap[$ward][$tag] : $tag;
+            $response[] = [
                 'value' => $tag,
-                'label' => $tagLabelMap[$ward][$tag] ?? $tag
+                'label' => $label
             ];
-        }, $tags);
+        }
 
         return response()->json($response, 200, [], JSON_UNESCAPED_UNICODE);
     }
@@ -111,18 +116,8 @@ class MeshTagController extends Controller
                 ->select('mesh_id', 'poi_coords')
                 ->get();
 
-            Log::info('✅ 検索結果取得', [
-                '件数' => $results->count(),
-                '一部結果' => $results->take(1),
-            ]);
-
             return response()->json($results, 200, [], JSON_UNESCAPED_UNICODE);
         } catch (\Exception $e) {
-            Log::error('❌ 検索エラー', [
-                'message' => $e->getMessage(),
-                'ward' => $ward,
-                'tag' => $tag,
-            ]);
             return response()->json(['error' => 'Server error'], 500);
         }
     }

@@ -22,8 +22,8 @@ return [
     'allowed_origins' => [
         'http://localhost:5173',
         'http://127.0.0.1:5173',
-        'http://localhost:5174',       // ✅ Vueがこのポートでも動く場合に必要
-        'http://127.0.0.1:5174',       // ✅ 実際のログから必要と判明
+        'http://localhost:5174',       
+        'http://127.0.0.1:5174',       
     ],
 
     'allowed_origins_patterns' => [],

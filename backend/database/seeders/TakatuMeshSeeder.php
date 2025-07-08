@@ -13,7 +13,7 @@ class TakatuMeshSeeder extends Seeder
         $jsonPath = database_path('seeders/data/poi_mesh_table_with_coords_takatu.json');
         $data = json_decode(File::get($jsonPath), true);
 
-        // JSONに対応したカラム名（マイグレーションで使っている名前）
+        
         $columns = [
             'seven_eleven',
             'family_mart',
@@ -48,7 +48,7 @@ class TakatuMeshSeeder extends Seeder
         }
     }
 
-    // JSONのキー名に対応させる変換（マッピング関数）
+    
     private function toOriginalJsonKey(string $column): string
     {
         return match ($column) {
