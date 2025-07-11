@@ -13,7 +13,8 @@ Vue.js + Laravel 製の Web アプリケーションで、OpenStreetMap (OSM) �
 - 地図表示：Leaflet.js
 
 Qiitaでの解説記事はこちら →  
-🔗 https://qiita.com/_masa_u/items/d3c1fa7898b0783bc3ed
+🔗https://qiita.com/firstnose0306/items/7c3adb0a8546193a792e
+
 
 ---
 
